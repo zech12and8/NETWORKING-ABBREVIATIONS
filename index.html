@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track & Field 2 - Networking Abbreviations</title>
+    <style>
+        /* ================================================================
+           TRACK & FIELD 2 (NES 1980s) COLOR SCHEME
+           Inspired by the classic Konami sports game
+           ================================================================ */
+        
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #1a0a2e;
+            background-image: 
+                radial-gradient(ellipse at 20% 50%, #2d1b4e 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 50%, #2d1b4e 0%, transparent 60%),
+                linear-gradient(180deg, #1a0a2e 0%, #0d0520 100%);
+            min-height: 100vh;
+            padding: 20px;
+            font-family: 'Press Start 2P', 'Courier New', monospace;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Scanline effect - retro CRT */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.15) 0px,
+                rgba(0, 0, 0, 0.15) 2px,
+                transparent 2px,
+                transparent 4px
+            );
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        /* Screen glow effect */
+        .screen-glow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(ellipse at center, rgba(100, 50, 200, 0.05) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* ================================================================
+           HEADER - Track & Field 2 Style
+           ================================================================ */
+        
+        .game-header {
+            text-align: center;
+            padding: 30px 20px 20px;
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        /* Title with pixel shadow */
+        .game-title {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 2.2rem;
+            color: #ffd700;
+            text-shadow: 
+                4px 4px 0 #8b0000,
+                6px 6px 0 #4a0000,
+                0 0 30px rgba(255, 215, 0, 0.3);
+            letter-spacing: 4px;
+            position: relative;
+            display: inline-block;
+            padding: 0 20px;
+        }
+
+        .game-title::before {
+            content: '🏃';
+            position: absolute;
+            left: -50px;
+            top: -10px;
+            font-size: 2rem;
+            animation: runAnim 1s steps(4) infinite;
+        }
+
+        .game-title::after {
+            content: '🏃';
+            position: absolute;
+            right: -50px;
+            top: -10px;
+            font-size: 2rem;
+            animation: runAnim 1s steps(4) infinite reverse;
+        }
+
+        @keyframes runAnim {
+            0% { transform: translateX(0) scaleX(1); }
+            25% { transform: translateX(5px) scaleX(1.1); }
+            50% { transform: translateX(0) scaleX(1); }
+            75% { transform: translateX(-5px) scaleX(1.1); }
+            100% { transform: translateX(0) scaleX(1); }
+        }
+
+        .game-subtitle {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.7rem;
+            color: #ff6b6b;
+            text-shadow: 2px 2px 0 #4a0000;
+            margin-top: 15px;
+            letter-spacing: 3px;
+            animation: blink 1.5s steps(2) infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* Pixel border decoration */
+        .pixel-border {
+            border: 4px solid #ffd700;
+            border-image: none;
+            position: relative;
+            padding: 4px;
+            background: linear-gradient(180deg, #2d1b4e, #1a0a2e);
+            box-shadow: 
+                0 0 20px rgba(255, 215, 0, 0.1),
+                inset 0 0 30px rgba(255, 215, 0, 0.05);
+        }
+
+        .pixel-border::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: -8px;
+            right: -8px;
+            bottom: -8px;
+            border: 2px solid #ffd700;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        /* ================================================================
+           SCORE / STATS BAR - Like Track & Field 2 HUD
+           ================================================================ */
+        
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-bottom: 25px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 3px solid #ffd700;
+            padding: 12px 20px;
+            border-radius: 0;
+            box-shadow: inset 0 0 30px rgba(255, 215, 0, 0.05);
+        }
+
+        .stat-item {
+            text-align: center;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.6rem;
+            color: #ffd700;
+            text-shadow: 2px 2px 0 #4a0000;
+        }
+
+        .stat-item .value {
+            display: block;
+            font-size: 1rem;
+            color: #ff6b6b;
+            margin-top: 3px;
+            text-shadow: 2px 2px 0 #4a0000;
+            font-weight: bold;
+        }
+
+        /* ================================================================
+           TABLE - Track & Field 2 Style
+           ================================================================ */
+        
+        .table-container {
+            background: rgba(0, 0, 0, 0.6);
+            border: 4px solid #ffd700;
+            padding: 4px;
+            overflow-x: auto;
+            box-shadow: 
+                0 0 40px rgba(255, 215, 0, 0.05),
+                inset 0 0 60px rgba(255, 215, 0, 0.03);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.55rem;
+            background: rgba(13, 5, 32, 0.9);
+            min-width: 700px;
+        }
+
+        /* Table header - like game HUD */
+        thead th {
+            background: linear-gradient(180deg, #2d1b4e, #1a0a2e);
+            color: #ffd700;
+            padding: 14px 12px;
+            text-align: left;
+            font-size: 0.65rem;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 0 #4a0000;
+            border-bottom: 4px solid #ffd700;
+            border-right: 2px solid rgba(255, 215, 0, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        thead th:last-child {
+            border-right: none;
+        }
+
+        /* Table rows - alternating like game levels */
+        tbody tr {
+            transition: all 0.2s;
+            cursor: default;
+        }
+
+        tbody tr:nth-child(even) {
+            background: rgba(45, 27, 78, 0.4);
+        }
+
+        tbody tr:nth-child(odd) {
+            background: rgba(26, 10, 46, 0.4);
+        }
+
+        tbody tr:hover {
+            background: rgba(255, 215, 0, 0.08);
+            transform: scale(1.002);
+            box-shadow: inset 0 0 30px rgba(255, 215, 0, 0.05);
+        }
+
+        tbody td {
+            padding: 10px 12px;
+            color: #e8d5f0;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.08);
+            border-right: 1px solid rgba(255, 215, 0, 0.05);
+            text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
+            vertical-align: top;
+            line-height: 1.6;
+        }
+
+        tbody td:last-child {
+            border-right: none;
+        }
+
+        /* Term column - highlighted like power-ups */
+        .term-cell {
+            color: #ffd700;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.2);
+            min-width: 80px;
+        }
+
+        /* Abbreviation column - like score displays */
+        .abbr-cell {
+            color: #ff6b6b;
+            font-weight: bold;
+            font-size: 0.7rem;
+            text-shadow: 0 0 15px rgba(255, 107, 107, 0.2);
+            min-width: 60px;
+        }
+
+        /* Description column - smaller text */
+        .desc-cell {
+            color: #a8b5c8;
+            font-size: 0.5rem;
+            line-height: 1.8;
+        }
+
+        .desc-cell .highlight {
+            color: #ffd700;
+        }
+
+        /* ================================================================
+           CATEGORY DIVIDERS - Like game level screens
+           ================================================================ */
+        
+        .category-divider {
+            background: linear-gradient(90deg, transparent, #ffd700, transparent);
+            height: 2px;
+            border: none;
+            margin: 8px 0;
+            opacity: 0.3;
+        }
+
+        .category-label {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.65rem;
+            color: #ffd700;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 8px 20px;
+            display: inline-block;
+            border: 2px solid #ffd700;
+            text-shadow: 2px 2px 0 #4a0000;
+            margin: 15px 0 10px;
+            letter-spacing: 3px;
+            animation: blink 2s steps(2) infinite;
+        }
+
+        /* ================================================================
+           FOOTER - Like game credits
+           ================================================================ */
+        
+        .game-footer {
+            text-align: center;
+            padding: 30px 20px 20px;
+            margin-top: 30px;
+            border-top: 3px solid rgba(255, 215, 0, 0.2);
+        }
+
+        .game-footer .credit {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.5rem;
+            color: #ffd700;
+            opacity: 0.6;
+            text-shadow: 2px 2px 0 #4a0000;
+            letter-spacing: 2px;
+        }
+
+        .game-footer .credit a {
+            color: #ff6b6b;
+            text-decoration: none;
+        }
+
+        .game-footer .credit a:hover {
+            color: #ffd700;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+
+        /* Pixel decoration dots */
+        .pixel-dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin: 10px 0;
+        }
+
+        .pixel-dots span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #ffd700;
+            opacity: 0.3;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.1);
+        }
+
+        .pixel-dots span:nth-child(2) { opacity: 0.6; }
+        .pixel-dots span:nth-child(3) { opacity: 0.9; }
+        .pixel-dots span:nth-child(4) { opacity: 0.6; }
+        .pixel-dots span:nth-child(5) { opacity: 0.3; }
+
+        /* ================================================================
+           RESPONSIVE
+           ================================================================ */
+        
+        @media (max-width: 768px) {
+            .game-title {
+                font-size: 1.2rem;
+                letter-spacing: 2px;
+                padding: 0 10px;
+            }
+            
+            .game-title::before,
+            .game-title::after {
+                display: none;
+            }
+
+            .game-subtitle {
+                font-size: 0.5rem;
+            }
+
+            table {
+                font-size: 0.45rem;
+                min-width: 500px;
+            }
+
+            thead th {
+                font-size: 0.5rem;
+                padding: 10px 8px;
+            }
+
+            tbody td {
+                padding: 8px 8px;
+            }
+
+            .abbr-cell {
+                font-size: 0.55rem;
+            }
+
+            .stats-bar {
+                grid-template-columns: repeat(2, 1fr);
+                padding: 10px 15px;
+            }
+
+            .stat-item {
+                font-size: 0.5rem;
+            }
+
+            .stat-item .value {
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .game-title {
+                font-size: 0.9rem;
+            }
+
+            table {
+                font-size: 0.4rem;
+                min-width: 400px;
+            }
+
+            .stats-bar {
+                grid-template-columns: 1fr 1fr;
+                gap: 5px;
+                padding: 8px 10px;
+            }
+
+            .stat-item {
+                font-size: 0.4rem;
+            }
+
+            .stat-item .value {
+                font-size: 0.65rem;
+            }
+        }
+
+        /* ================================================================
+           ANIMATIONS
+           ================================================================ */
+        
+        /* Glow pulse for important items */
+        @keyframes glowPulse {
+            0%, 100% { text-shadow: 0 0 10px rgba(255, 215, 0, 0.2); }
+            50% { text-shadow: 0 0 30px rgba(255, 215, 0, 0.5); }
+        }
+
+        .glow-pulse {
+            animation: glowPulse 2s ease-in-out infinite;
+        }
+
+        /* Coin flip animation for fun */
+        .coin-flip {
+            display: inline-block;
+            animation: coinFlip 3s ease-in-out infinite;
+        }
+
+        @keyframes coinFlip {
+            0%, 100% { transform: rotateY(0deg); }
+            50% { transform: rotateY(180deg); }
+        }
+
+        /* ================================================================
+           SPECIAL CATEGORY BADGES
+           ================================================================ */
+        
+        .badge-nes {
+            display: inline-block;
+            background: #ffd700;
+            color: #1a0a2e;
+            padding: 2px 10px;
+            font-size: 0.45rem;
+            font-family: 'Press Start 2P', monospace;
+            border: 2px solid #8b0000;
+            text-shadow: none;
+            margin: 2px 0;
+        }
+
+        .badge-nes.blue {
+            background: #4488ff;
+            border-color: #0022aa;
+            color: white;
+        }
+
+        .badge-nes.red {
+            background: #ff4444;
+            border-color: #880000;
+            color: white;
+        }
+
+        .badge-nes.green {
+            background: #44ff88;
+            border-color: #008844;
+            color: #0a0a0a;
+        }
+
+        /* Start screen button style */
+        .start-prompt {
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.7rem;
+            color: #ffd700;
+            text-align: center;
+            padding: 10px;
+            animation: blink 1s steps(2) infinite;
+            border: 2px dashed rgba(255, 215, 0, 0.3);
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="screen-glow"></div>
+    
+    <div class="container">
+        <!-- Header -->
+        <div class="game-header">
+            <div class="game-title">
+                NETWORKING ABBREVIATIONS
+            </div>
+            <div class="game-subtitle">
+                ★ TRACK & FIELD 2 EDITION ★
+            </div>
+            <div class="pixel-dots">
+                <span></span><span></span><span></span><span></span><span></span>
+            </div>
+            <div style="font-family:'Press Start 2P',monospace; font-size:0.4rem; color:#ff6b6b; opacity:0.5; margin-top:10px;">
+                Ⓒ 1986 KONAMI Ⓒ 2026 POOLERSOC
+            </div>
+        </div>
+
+        <!-- Stats Bar -->
+        <div class="stats-bar">
+            <div class="stat-item">
+                🏆 LEVEL
+                <span class="value">7-2</span>
+            </div>
+            <div class="stat-item">
+                🏃 SCORE
+                <span class="value">99,999</span>
+            </div>
+            <div class="stat-item">
+                📡 PACKETS
+                <span class="value">1,024</span>
+            </div>
+            <div class="stat-item">
+                ⚡ PING
+                <span class="value">12ms</span>
+            </div>
+            <div class="stat-item">
+                🎮 PLAYER
+                <span class="value">POOLER</span>
+            </div>
+        </div>
+
+        <!-- Start prompt -->
+        <div class="start-prompt">
+            ▶ PRESS START TO CONTINUE ◀
+        </div>
+
+        <!-- Table -->
+        <div class="pixel-border">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width:25%;">📘 TERM</th>
+                            <th style="width:20%;">⚡ ABBR</th>
+                            <th style="width:55%;">📖 DESCRIPTION</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- ============================================================
+                             SECTION: BASIC NETWORKING TERMS
+                             ============================================================ -->
+                        <tr>
+                            <td colspan="3" style="padding:0; border-bottom: none;">
+                                <div class="category-label">▼ BASIC NETWORKING</div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="term-cell">Domain Name System</td>
+                            <td class="abbr-cell"><span class="glow-pulse">DNS</span></td>
+                            <td class="desc-cell">Translates domain names to <span class="highlight">IP addresses</span></td>
+                        </tr>
+
+                        <tr>
+                            <td class="term-cell">Dynamic Host Configuration Protocol</td>
+                            <td class="abbr-cell"><span class="glow-pulse">DHCP</span></td>
+                            <td class="desc-cell">Automatically assigns <span class="highlight">IP addresses</span> to devices on a network</td>
+                        </tr>
+
+                        <tr>
+                            <td class="term-cell">Media Access Control</td>
+                            <td class="abbr-cell"><span class="glow-pulse">MAC</span></td>
+                            <td class="desc-cell">Unique hardware identifier for <span class="highlight">network interfaces</span></td>
+                        </tr>
+
+                        <tr>
+                            <td class="term-cell">Local Area Network</td>
+                            <td class="abbr-cell"><span class="glow-pulse">LAN</span></td>
+                            <td class="desc-cell">Network limited to a small area like <span class="highlight">home or office</span></td>
+                        </tr>
+
+                        <tr>
+                            <td class="term-cell">Wide Area Network</td>
+                            <td class="abbr-cell"><span class="glow-pulse">WAN</span></td>
+                            <td class="desc-cell">Network that spans <span class="highlight">large geographic areas</span></td>
+                        </tr>
+
+                        <tr>
+                            <td class="term-cell">Service Set Identifier</td>
+                            <td class="abbr-cell"><span class="glow-pulse">SSID</span></td>
+                            <td class="desc-cell">Name of a <span class="highlight">Wi-Fi network</span></td>
+                        </tr>
+
+                        <!-- ============================================================
+                             SECTION: PROTOCOLS
+                             ============================================================ -->
+                        <tr>
+                            <td colspan="3" style="padding:0; border-bottom: none;">
+                                <div class="category-label">▼ PROTOCOLS</div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="term-cell">Transmission Control Protocol</td>
+                            <td class="abbr-cell"><span class="glow-pulse">TCP</span></td>
+                            <td class="desc-cell">Reliable, connection-oriented <span class="highlight">data transfer</span></td>
+                        </tr>
+
+                        <tr>
+                            <td class="term-cell">User Datagram Protocol</td>
+                            <td class="abbr-cell"><span class="glow-pulse">UDP</span></td>
+                            <td class="desc-cell">Faster, connectionless <span class="highlight">data transfer</span></td>
+                        </tr>
+
+                        <tr>
+                            <td class="term-cell">HyperText Transfer Protocol</td>
+                            <td class="abbr-cell"><span class="glow-pulse">HTTP</span></td>
+                            <td class="desc-cell">Foundation of <span class="highlight">web communication</span></td>
+                        </tr>
+
+                        <tr>
+                            <td class="term-cell">HyperText Transfer Protocol Secure</td>
+                            <td class="abbr-cell"><span class="glow-pulse">HTTPS</span></td>
+                            <td class="desc-cell"><span class="highlight">Secure</span> version of HTTP with encryption</td>
+                        </tr>
+
+                        <tr>
+                            <td class="term-cell">File Transfer Protocol</td>
+                            <td class="abbr-cell"><span class="glow-pulse">FTP</span></td>
+                            <td class="desc-cell">Transfer <span class="highlight">files</span> over a network</td>
+                        </tr>
+
+                        <tr>
+                            <td class="term-cell">Simple Mail Transfer Protocol</td>
+                            <td class="abbr-cell"><span class="glow-pulse">SMTP</span></td>
+                            <td class="desc-cell">Protocol for <span class="highlight">email transmission</span></td>
+                        </tr>
+
+                        <tr>
+                            <td class="term-cell">Post Office Protocol 3</td>
+                            <td class="abbr-cell"><span class="glow-pulse">POP3</span></td>
+                            <td class="desc-cell">Downloads <span class="highlight">email</span> from server to client</td>
+                        </tr>
+
+                        <tr>
+                            <td class="term-cell">Internet Message Access Protocol</td>
+                            <td class="abbr-cell"><span class="glow-pulse">IMAP</span></td>
+                            <td class="desc-cell">Manages <span class="highlight">email</span> on the server</td>
+                        </tr>
+
+                        <!-- ============================================================
+                             SECTION: NETWORK SERVICES
+                             ============================================================ -->
+                        <tr>
+                            <td colspan="3" style="padding:0; border-bottom: none;">
+                                <div class="category-label">▼ NETWORK SERVICES</div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="term-cell">Network Address Translation</td>
+                            <td class="abbr-cell"><span class="glow-pulse">NAT</span></td>
+                            <td class="desc-cell">Translates <span class="highlight">private</span> IPs to <span class="highlight">public</span> IPs</td>
+                        </tr>
+
+                        <tr>
+                            <td class="term-cell">Virtual Private Network</td>
+                            <td class="abbr-cell"><span class="glow-pulse">VPN</span></td>
+                            <td class="desc-cell"><span class="highlight">Secure encrypted</span> connection over the internet</td>
+                        </tr>
+
+                        <tr>
+                            <td class="term-cell">Quality of Service</td>
+                            <td class="abbr-cell"><span class="glow-pulse">QoS</span></td>
+                            <td class="desc-cell"><span class="highlight">Prioritizes</span> network traffic</td>
+                        </tr>
+
+                        <tr>
+                            <td class="term-cell">Network Time Protocol</td>
+                            <td class="abbr-cell"><span class="glow-pulse">NTP</span></td>
+                            <td class="desc-cell"><span class="highlight">Synchronizes</span> time across devices</td>
+                        </tr>
+
+                        <!-- ============================================================
+                             SECTION: ROUTING & SWITCHING
+                             ============================================================ -->
+                        <tr>
+                            <td colspan="3" style="padding:0; border-bottom: none;">
+                                <div class="category-label">▼ ROUTING &amp; SWITCHING</div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="term-cell">Border Gateway Protocol</td>
+                            <td class="abbr-cell"><span class="glow-pulse">BGP</span></td>
+                            <td class="desc-cell"><span class="highlight">Core</span> internet routing protocol</td>
+                        </tr>
+
+                        <tr>
+                            <td class="term-cell">Open Shortest Path First</td>
+                            <td class="abbr-cell"><span class="glow-pulse">OSPF</span></td>
+                            <td class="desc-cell"><span class="highlight">Interior</span> gateway routing protocol</td>
+                        </tr>
+
+                        <tr>
+                            <td class="term-cell">Spanning Tree Protocol</td>
+                            <td class="abbr-cell"><span class="glow-pulse">STP</span></td>
+                            <td class="desc-cell">Prevents <span class="highlight">loops</span> in switch networks</td>
+                        </tr>
+
+                        <tr>
+                            <td class="term-cell">Routing Information Protocol</td>
+                            <td class="abbr-cell"><span class="glow-pulse">RIP</span></td>
+                            <td class="desc-cell"><span class="highlight">Distance vector</span> routing protocol</td>
+                        </tr>
+
+                        <!-- ============================================================
+                             SECTION: NETWORK TOOLS
+                             ============================================================ -->
+                        <tr>
+                            <td colspan="3" style="padding:0; border-bottom: none;">
+                                <div class="category-label">▼ NETWORK TOOLS</div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="term-cell">Internet Control Message Protocol</td>
+                            <td class="abbr-cell"><span class="glow-pulse">ICMP</span></td>
+                            <td class="desc-cell">Used for <span class="highlight">error reporting</span> and diagnostics</td>
+                        </tr>
+
+                        <tr>
+                            <td class="term-cell">Packet Internet Groper</td>
+                            <td class="abbr-cell"><span class="glow-pulse">PING</span></td>
+                            <td class="desc-cell">Tests <span class="highlight">connectivity</span> to a host</td>
+                        </tr>
+
+                        <tr>
+                            <td class="term-cell">Time to Live</td>
+                            <td class="abbr-cell"><span class="glow-pulse">TTL</span></td>
+                            <td class="desc-cell">Lists how long <span class="highlight">data packets</span> live on the network</td>
+                        </tr>
+
+                        <tr>
+                            <td class="term-cell">Maximum Transmission Unit</td>
+                            <td class="abbr-cell"><span class="glow-pulse">MTU</span></td>
+                            <td class="desc-cell">Largest size of a <span class="highlight">network packet</span></td>
+                        </tr>
+
+                        <!-- ============================================================
+                             SECTION: VIRTUAL NETWORKS
+                             ============================================================ -->
+                        <tr>
+                            <td colspan="3" style="padding:0; border-bottom: none;">
+                                <div class="category-label">▼ VIRTUAL NETWORKS</div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="term-cell">Virtual Local Area Network</td>
+                            <td class="abbr-cell"><span class="glow-pulse">VLAN</span></td>
+                            <td class="desc-cell"><span class="highlight">Virtual</span> network segmentation</td>
+                        </tr>
+
+                        <tr>
+                            <td class="term-cell">Virtual Private Network</td>
+                            <td class="abbr-cell"><span class="glow-pulse">VPN</span></td>
+                            <td class="desc-cell"><span class="highlight">Secure encrypted</span> tunnel over the internet</td>
+                        </tr>
+
+                        <!-- ============================================================
+                             FOOTER ROW - Total Count
+                             ============================================================ -->
+                        <tr style="border-top: 3px solid #ffd700;">
+                            <td colspan="3" style="text-align:center; padding:12px; font-family:'Press Start 2P',monospace; font-size:0.5rem; color:#ffd700; background:rgba(0,0,0,0.4);">
+                                ★ TOTAL ABBREVIATIONS: <span style="color:#ff6b6b; font-size:0.7rem;">32</span> ★
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="game-footer">
+            <div class="pixel-dots">
+                <span></span><span></span><span></span><span></span><span></span>
+            </div>
+            <div class="credit">
+                🎮 <a href="https://poolersoccs.blogspot.com/" target="_blank">POOLER SOC STUDIO</a> 🎮<br>
+                <span style="font-size:0.4rem; opacity:0.5;">
+                    🔗 <a href="https://github.com/zech12and8" target="_blank">GitHub: zech12and8</a> &nbsp;|&nbsp;
+                    📝 <a href="https://poolersoccs.blogspot.com/" target="_blank">Blog: PoolerSOC</a>
+                </span>
+                <br><br>
+                <span style="font-size:0.35rem; opacity:0.3;">
+                    Ⓒ 1986 KONAMI • TRACK & FIELD 2 • NES • RETRO STYLE
+                </span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
